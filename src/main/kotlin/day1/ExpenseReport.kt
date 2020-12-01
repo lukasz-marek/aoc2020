@@ -13,7 +13,7 @@ interface ExpenseReportFixer {
 class ExpenseReportFixerImpl : ExpenseReportFixer {
     override fun findTwoEntriesWithSumEqualTo(report: ExpenseReport, expected: Entry): Pair<Entry, Entry> {
         for ((index, entry1) in report.expenses.withIndex()) {
-            for (entry2 in report.expenses.drop(index + 1)) {
+            for (entry2 in report.expenses.subList(index + 1, report.expenses.size)) {
                 val sum = entry1 + entry2
                 if (sum == expected) {
                     return Pair(entry1, entry2)
@@ -26,7 +26,7 @@ class ExpenseReportFixerImpl : ExpenseReportFixer {
     override fun findThreeEntriesWithSumEqualTo(report: ExpenseReport, expected: Entry): List<Entry> {
         for ((index1, entry1) in report.expenses.withIndex()) {
             for ((index2, entry2) in report.expenses.withIndex().drop(index1 + 1)) {
-                for (entry3 in report.expenses.drop(index2 + 1)) {
+                for (entry3 in report.expenses.subList(index2 + 1, report.expenses.size)) {
                     val sum = entry1 + entry2 + entry3
                     if (sum == expected) {
                         return listOf(entry1, entry2, entry3)
