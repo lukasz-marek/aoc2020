@@ -22,7 +22,12 @@ object Loader {
 
 fun main() {
     val input = Loader.load()
-    val validator = OldPasswordValidator()
-    val validInputsNumber = input.count { validator.validate(it.second, it.first) }
-    println("Valid passwords = $validInputsNumber")
+
+    val oldValidator = OldPasswordValidator()
+    val oldValidPasswords = input.count { oldValidator.validate(it.second, it.first) }
+    println("Old-Valid passwords = $oldValidPasswords")
+
+    val newValidator = NewPasswordValidator()
+    val newValidPasswords = input.count { newValidator.validate(it.second, it.first) }
+    println("New-Valid passwords = $newValidPasswords")
 }
