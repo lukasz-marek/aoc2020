@@ -11,16 +11,14 @@ interface TreeCounter {
     fun countTrees(grid: Grid): Long
 }
 
-class TreeCounterImpl: TreeCounter {
-    private val stepsRight = 3
-    private val stepsDown = 1
+class TreeCounterImpl(private val stepsRight: Int, private val stepsDown: Int) : TreeCounter {
 
     override fun countTrees(grid: Grid): Long {
         var currentPosition = 0 to 0
         var treesCount = 0L
 
-        while(currentPosition.first in grid.map.indices){
-            treesCount += when(grid.map[currentPosition.first][currentPosition.second]){
+        while (currentPosition.first in grid.map.indices) {
+            treesCount += when (grid.map[currentPosition.first][currentPosition.second]) {
                 Field.TREE -> 1
                 else -> 0
             }
@@ -29,10 +27,11 @@ class TreeCounterImpl: TreeCounter {
 
         return treesCount
     }
-    private fun calculateNextPosition(currentPosition: Pair<Int, Int>, grid:Grid): Pair<Int, Int> {
+
+    private fun calculateNextPosition(currentPosition: Pair<Int, Int>, grid: Grid): Pair<Int, Int> {
         val currentRowSize = grid.map[currentPosition.first].size
 
-        return with(currentPosition){
+        return with(currentPosition) {
             val nextRowIndex = first + stepsDown
             val nextColumnIndex = (second + stepsRight) % currentRowSize
             nextRowIndex to nextColumnIndex
