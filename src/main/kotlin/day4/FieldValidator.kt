@@ -33,3 +33,20 @@ class BirthYearValidator : YearRangeValidator(1920 to 2002, "byr")
 class IssueYearValidator : YearRangeValidator(2010 to 2020, "iyr")
 
 class ExpirationYearValidator : YearRangeValidator(2020 to 2030, "eyr")
+
+class HeightValidator : AbstractFieldValidator("hgt") {
+    private val pattern = "^(\\d+)(\\w+$)"
+    private val regex = Regex(pattern)
+
+    override fun isValueValid(fieldValue: String): Boolean {
+        val match = regex.matchEntire(fieldValue)
+        return match?.let {
+            val (value, unit) = it.destructured
+            when (unit) {
+                "in" -> value.toInt() in 59..76
+                "cm" -> value.toInt() in 150..193
+                else -> false
+            }
+        } ?: false
+    }
+}
