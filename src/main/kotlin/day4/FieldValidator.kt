@@ -32,3 +32,4 @@ class BirthYearValidator : YearRangeValidator(1920 to 2002, "byr")
 
 class IssueYearValidator : YearRangeValidator(2010 to 2020, "iyr")
 
+class ExpirationYearValidator : YearRangeValidator(2020 to 2030, "eyr")
