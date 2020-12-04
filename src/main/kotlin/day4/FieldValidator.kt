@@ -17,16 +17,18 @@ abstract class AbstractFieldValidator(private val validatedFieldName: String) : 
     final override fun isValid(document: Document): Boolean = isValueValid(document.contents[validatedFieldName]!!)
 }
 
-class BirthYearValidator : AbstractFieldValidator("byr") {
-
+abstract class YearRangeValidator(private val range: Pair<Int, Int>, validatedFieldName: String) :
+    AbstractFieldValidator(validatedFieldName) {
     override fun isValueValid(fieldValue: String): Boolean {
         val hasCorrectLength = fieldValue.length == 4
         val hasCorrectDate = fieldValue.toIntOrNull()?.let {
-            it in 1920..2002
+            it in range.first..range.second
         } ?: false
         return hasCorrectDate && hasCorrectLength
     }
-
 }
 
+class BirthYearValidator : YearRangeValidator(1920 to 2002, "byr")
+
+class IssueYearValidator : YearRangeValidator(2010 to 2020, "iyr")
 
