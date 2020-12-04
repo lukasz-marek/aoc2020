@@ -23,7 +23,7 @@ fun parseDocument(document: String): Document {
 
 fun identifyDocuments(lines: List<String>): List<String> {
     val documents = mutableListOf<String>()
-    var documentInProgress = mutableListOf<String>()
+    val documentInProgress = mutableListOf<String>()
 
     for (line in lines) {
         if (line.isEmpty()) {
