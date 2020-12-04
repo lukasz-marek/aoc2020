@@ -50,3 +50,10 @@ class HeightValidator : AbstractFieldValidator("hgt") {
         } ?: false
     }
 }
+
+class HairColorValidator: AbstractFieldValidator("hcl") {
+    private val pattern = "^#[0-9a-f]{6}"
+    private val regex = Regex(pattern)
+
+    override fun isValueValid(fieldValue: String): Boolean = regex.matches(fieldValue)
+}
