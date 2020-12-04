@@ -10,3 +10,23 @@ object PassAllFieldValidator : FieldValidator {
 
     override fun isValid(document: Document): Boolean = true
 }
+
+abstract class AbstractFieldValidator(private val validatedFieldName: String) : FieldValidator {
+    override fun validatesField(fieldName: String): Boolean = fieldName == validatedFieldName
+    protected abstract fun isValueValid(fieldValue: String): Boolean
+    final override fun isValid(document: Document): Boolean = isValueValid(document.contents[validatedFieldName]!!)
+}
+
+class BirthYearValidator : AbstractFieldValidator("byr") {
+
+    override fun isValueValid(fieldValue: String): Boolean {
+        val hasCorrectLength = fieldValue.length == 4
+        val hasCorrectDate = fieldValue.toIntOrNull()?.let {
+            it in 1920..2002
+        } ?: false
+        return hasCorrectDate && hasCorrectLength
+    }
+
+}
+
+
