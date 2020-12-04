@@ -6,8 +6,21 @@ interface DocumentValidator {
     fun isValid(document: Document): Boolean
 }
 
-class DocumentValidatorImpl(private val requiredFields: Set<String>) : DocumentValidator {
-    override fun isValid(document: Document): Boolean = requiredFields.all { document.contents.containsKey(it) }
+class DocumentValidatorImpl(
+    private val requiredFields: Set<String>,
+    private val validators: List<FieldValidator> = listOf(PassAllFieldValidator)
+) : DocumentValidator {
+
+    override fun isValid(document: Document): Boolean {
+        val hasValidStructure = requiredFields.all { document.contents.containsKey(it) }
+        val validateFields = { ->
+            val applicableValidators = validators.filter { fieldValidator ->
+                document.contents.keys.any { fieldValidator.validatesField(it) }
+            }
+            applicableValidators.all { it.isValid(document) }
+        }
+        return hasValidStructure && validateFields()
+    }
 }
 
 fun parseDocument(document: String): Document {

@@ -16,8 +16,18 @@ object Loader {
 
 fun main() {
     val inputDocuments = Loader.load()
-    val requiredFields = setOf("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"/*, "cid"*/)
+    val requiredFields = setOf("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
     val validator = DocumentValidatorImpl(requiredFields)
     val validDocumentsCount = inputDocuments.count { validator.isValid(it) }
     println("Valid documents count: $validDocumentsCount")
+
+    val fieldValidators = listOf(
+        BirthYearValidator(), ExpirationYearValidator(),
+        IssueYearValidator(), HairColorValidator(),
+        HeightValidator(), PassportIdValidator(),
+        EyeColorValidator()
+    )
+    val strictValidator = DocumentValidatorImpl(requiredFields, fieldValidators)
+    val strictlyValidDocumentsCount = inputDocuments.count { strictValidator.isValid(it) }
+    println("Strictly Valid documents count: $strictlyValidDocumentsCount")
 }

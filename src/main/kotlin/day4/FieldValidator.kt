@@ -51,14 +51,21 @@ class HeightValidator : AbstractFieldValidator("hgt") {
     }
 }
 
-class HairColorValidator: AbstractFieldValidator("hcl") {
+class HairColorValidator : AbstractFieldValidator("hcl") {
     private val pattern = "^#[0-9a-f]{6}$"
     private val regex = Regex(pattern)
 
     override fun isValueValid(fieldValue: String): Boolean = regex.matches(fieldValue)
 }
 
-class PassportIdValidator: AbstractFieldValidator("pid") {
+
+class EyeColorValidator : AbstractFieldValidator("ecl") {
+    private val validColors = setOf("amb", "blu", "brn", "gry", "grn", "hzl", "oth")
+
+    override fun isValueValid(fieldValue: String): Boolean = validColors.contains(fieldValue)
+}
+
+class PassportIdValidator : AbstractFieldValidator("pid") {
     private val pattern = "^\\d{9}$"
     private val regex = Regex(pattern)
 
