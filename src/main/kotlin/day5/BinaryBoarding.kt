@@ -29,11 +29,14 @@ interface PartitionDecoder {
 }
 
 class PartitionDecoderImpl(private val range: Pair<Int, Int>) : PartitionDecoder {
+    init {
+        check(range.first <= range.second) { "${range.first} is not less or equal than ${range.second}" }
+    }
 
     override fun decode(encoded: List<StepDirection>): Int = decode(encoded, range.first, range.second)
 
-    private tailrec fun decode(encoded: List<StepDirection>, lower: Int, upper: Int): Int {
-        return when {
+    private tailrec fun decode(encoded: List<StepDirection>, lower: Int, upper: Int): Int =
+        when {
             encoded.isEmpty() && upper == lower -> upper
             encoded.isEmpty() -> throw IllegalStateException("Ambiguous input: cannot decide between $lower and $upper!")
             encoded[0] == StepDirection.Upper -> {
@@ -46,6 +49,5 @@ class PartitionDecoderImpl(private val range: Pair<Int, Int>) : PartitionDecoder
             }
             else -> throw IllegalStateException("Decoder in illegal state!")
         }
-    }
 
 }
