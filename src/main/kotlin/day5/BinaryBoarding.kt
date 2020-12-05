@@ -21,3 +21,31 @@ fun parseSeat(value: String): EncodedSeat {
 
     return EncodedSeat(parsedRow, parsedColumn)
 }
+
+data class DecodedSeat(val row: Int, val column: Int, val seatId: Int)
+
+interface PartitionDecoder {
+    fun decode(encoded: List<StepDirection>): Int
+}
+
+class PartitionDecoderImpl(private val range: Pair<Int, Int>) : PartitionDecoder {
+
+    override fun decode(encoded: List<StepDirection>): Int = decode(encoded, range.first, range.second)
+
+    private tailrec fun decode(encoded: List<StepDirection>, lower: Int, upper: Int): Int {
+        return when {
+            encoded.isEmpty() && upper == lower -> upper
+            encoded.isEmpty() -> throw IllegalStateException("Ambiguous input: cannot decide between $lower and $upper!")
+            encoded[0] == StepDirection.Upper -> {
+                val newLower = ((lower + upper) / 2) + 1
+                decode(encoded.subList(1, encoded.size), newLower, upper)
+            }
+            encoded[0] == StepDirection.Lower -> {
+                val newUpper = (lower + upper) / 2
+                decode(encoded.subList(1, encoded.size), lower, newUpper)
+            }
+            else -> throw IllegalStateException("Decoder in illegal state!")
+        }
+    }
+
+}
