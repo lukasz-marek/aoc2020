@@ -30,11 +30,11 @@ class PartitionDecoderImplTest {
     @Test
     fun `should decode seat column`() {
         // given
-        val encodedRow = listOf(StepDirection.Upper, StepDirection.Lower, StepDirection.Upper)
+        val encodedColumn = listOf(StepDirection.Upper, StepDirection.Lower, StepDirection.Upper)
         val decoder = PartitionDecoderImpl(0 to 7)
 
         // when
-        val decoded = decoder.decode(encodedRow)
+        val decoded = decoder.decode(encodedColumn)
 
         // then
         expectThat(decoded).isEqualTo(5)

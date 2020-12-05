@@ -51,3 +51,18 @@ class PartitionDecoderImpl(private val range: Pair<Int, Int>) : PartitionDecoder
         }
 
 }
+
+interface SeatDecoder {
+    fun decode(encodedSeat: EncodedSeat): DecodedSeat
+}
+
+class SeatDecoderImpl(private val rowDecoder: PartitionDecoder, private val columnDecoder: PartitionDecoder) :
+    SeatDecoder {
+    override fun decode(encodedSeat: EncodedSeat): DecodedSeat {
+        val decodedRow = rowDecoder.decode(encodedSeat.row)
+        val decodedColumn = columnDecoder.decode(encodedSeat.column)
+        val seatId = decodedRow * 8 + decodedColumn
+        return DecodedSeat(row = decodedRow, column = decodedColumn, seatId = seatId)
+    }
+
+}
