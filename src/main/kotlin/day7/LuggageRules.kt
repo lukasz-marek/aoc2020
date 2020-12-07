@@ -26,3 +26,23 @@ private fun parseContainedBag(containedBag: String): Pair<Bag, Int> {
     val (quantity, color) = matched.destructured
     return Bag(color) to quantity.toInt()
 }
+
+interface InferenceRunner {
+    fun inferPossibleContainingBags(bag: Bag): Set<Bag>
+}
+
+class InferenceRunnerImpl(private val rules: List<Rule>) : InferenceRunner {
+    override fun inferPossibleContainingBags(bag: Bag): Set<Bag> = runInference(setOf(bag), emptySet()) - setOf(bag)
+
+    private tailrec fun runInference(searchedBags: Set<Bag>, foundBags: Set<Bag>): Set<Bag> =
+        if (searchedBags.isEmpty()) {
+            foundBags
+        } else {
+            val bagsContainingSearchedBags = rules
+                .filter { it.containedBags.keys.intersect(searchedBags).isNotEmpty() }
+                .map { it.describedBag }
+                .toSet()
+            runInference(bagsContainingSearchedBags, foundBags + searchedBags)
+        }
+
+}
