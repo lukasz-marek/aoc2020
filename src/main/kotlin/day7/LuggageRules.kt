@@ -44,5 +44,21 @@ class InferenceRunnerImpl(private val rules: List<Rule>) : InferenceRunner {
                 .toSet()
             runInference(bagsContainingSearchedBags, foundBags + searchedBags)
         }
+}
 
+interface BagsCounter {
+    fun countBagsRequiredBy(bag: Bag): Int
+}
+
+class BagsCounterImpl(rules: List<Rule>) : BagsCounter {
+
+    private val fastRules = rules.map { it.describedBag to it.containedBags }.toMap()
+
+    override fun countBagsRequiredBy(bag: Bag): Int = countTotalBags(bag) - 1
+
+    private fun countTotalBags(bag: Bag): Int {
+        val requiredBags = fastRules[bag]!!
+        return requiredBags.toList()
+            .fold(1) { acc, pair -> acc + pair.second * countTotalBags(pair.first) }
+    }
 }
