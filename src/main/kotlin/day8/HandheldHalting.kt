@@ -4,7 +4,7 @@ interface ExecutableInstruction {
     fun execute(state: InterpreterState): InterpreterState
 }
 
-class NopInstruction : ExecutableInstruction {
+object NopInstruction : ExecutableInstruction {
 
     override fun execute(state: InterpreterState): InterpreterState {
         val currentLine = ProgramLine(state.executionIndex, this)
@@ -13,7 +13,7 @@ class NopInstruction : ExecutableInstruction {
 
 }
 
-class AddInstruction(private val amount: Int) : ExecutableInstruction {
+data class AccInstruction(val amount: Int) : ExecutableInstruction {
 
     override fun execute(state: InterpreterState): InterpreterState {
         val currentLine = ProgramLine(state.executionIndex, this)
@@ -26,8 +26,7 @@ class AddInstruction(private val amount: Int) : ExecutableInstruction {
 
 }
 
-class JmpInstruction(private val jumpBy: Int) : ExecutableInstruction {
-
+data class JmpInstruction(val jumpBy: Int) : ExecutableInstruction {
 
     override fun execute(state: InterpreterState): InterpreterState {
         val currentLine = ProgramLine(state.executionIndex, this)
@@ -43,6 +42,27 @@ class JmpInstruction(private val jumpBy: Int) : ExecutableInstruction {
 data class ProgramLine(val index: Int, val instruction: ExecutableInstruction)
 data class InterpreterState(val accumulator: Int, val executedLines: List<ProgramLine>, val executionIndex: Int)
 data class Program(val lines: List<ExecutableInstruction>)
+
 interface Interpreter {
     fun run(program: Program): InterpreterState
+}
+
+class InterpreterImpl : Interpreter {
+
+    override fun run(program: Program): InterpreterState {
+        val instructions = program.lines.mapIndexed { index, instruction -> ProgramLine(index, instruction) }
+        val initialState = InterpreterState(accumulator = 0, executionIndex = 0, executedLines = emptyList())
+        return execute(instructions, initialState)
+    }
+
+    private tailrec fun execute(instructions: List<ProgramLine>, state: InterpreterState): InterpreterState {
+        val currentLine = instructions[state.executionIndex]!!
+        return if (state.executedLines.contains(currentLine)) {
+            state
+        } else {
+            val nextState = currentLine.instruction.execute(state)
+            execute(instructions, nextState)
+        }
+    }
+
 }

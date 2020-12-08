@@ -5,7 +5,7 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 class NopInstructionTest {
-    private val tested = NopInstruction()
+    private val tested = NopInstruction
 
     @Test
     fun `should do nothing apart from moving to the next line`() {
