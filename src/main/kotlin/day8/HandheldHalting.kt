@@ -66,3 +66,15 @@ class InterpreterImpl : Interpreter {
     }
 
 }
+
+private val instructionPattern = Regex("^(.+) (.+)$")
+fun parseInstruction(line: String): ExecutableInstruction {
+    val match = instructionPattern.matchEntire(line.trim())!!
+    val (instructionName, argument) = match.destructured
+    return when (instructionName) {
+        "acc" -> AccInstruction(argument.toInt())
+        "nop" -> NopInstruction
+        "jmp" -> JmpInstruction(argument.toInt())
+        else -> throw IllegalArgumentException("'$line' is not a valid program line!")
+    }
+}
