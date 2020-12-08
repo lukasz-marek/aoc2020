@@ -4,7 +4,7 @@ interface ExecutableInstruction {
     fun execute(state: InterpreterState): InterpreterState
 }
 
-object NopInstruction : ExecutableInstruction {
+data class NopInstruction(val arg: Int) : ExecutableInstruction {
 
     override fun execute(state: InterpreterState): InterpreterState {
         val currentLine = ProgramLine(state.executionIndex, this)
@@ -56,7 +56,10 @@ class InterpreterImpl : Interpreter {
     }
 
     private tailrec fun execute(instructions: List<ProgramLine>, state: InterpreterState): InterpreterState {
-        val currentLine = instructions[state.executionIndex]!!
+        if (state.executionIndex !in instructions.indices) {
+            return state // program finished gracefully
+        }
+        val currentLine = instructions[state.executionIndex]
         return if (state.executedLines.contains(currentLine)) {
             state
         } else {
@@ -73,7 +76,7 @@ fun parseInstruction(line: String): ExecutableInstruction {
     val (instructionName, argument) = match.destructured
     return when (instructionName) {
         "acc" -> AccInstruction(argument.toInt())
-        "nop" -> NopInstruction
+        "nop" -> NopInstruction(argument.toInt())
         "jmp" -> JmpInstruction(argument.toInt())
         else -> throw IllegalArgumentException("'$line' is not a valid program line!")
     }
