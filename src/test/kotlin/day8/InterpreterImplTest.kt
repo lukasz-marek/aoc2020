@@ -18,7 +18,7 @@ acc +6
      */
     private val program = Program(
         listOf(
-            NopInstruction,
+            NopInstruction(0),
             AccInstruction(1),
             JmpInstruction(4),
             AccInstruction(3),

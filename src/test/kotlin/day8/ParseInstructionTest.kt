@@ -16,7 +16,7 @@ class ParseInstructionTest {
         val parsed = parseInstruction(instruction)
 
         // then
-        expectThat(parsed).isEqualTo(NopInstruction)
+        expectThat(parsed).isEqualTo(NopInstruction(0))
     }
 
     @ParameterizedTest
