@@ -1,12 +1,12 @@
 package day9
 
-data class EncryptedData(val numbers: List<Int>, val preambleSize: Int)
+data class EncryptedData(val numbers: List<Long>, val preambleSize: Int)
 interface InvalidNumberFinder {
-    fun findInvalidNumbers(encryptedData: EncryptedData): List<Int>
+    fun findInvalidNumbers(encryptedData: EncryptedData): List<Long>
 }
 
 class InvalidNumberFinderImpl : InvalidNumberFinder {
-    override fun findInvalidNumbers(encryptedData: EncryptedData): List<Int> {
+    override fun findInvalidNumbers(encryptedData: EncryptedData): List<Long> {
         val preamble = with(encryptedData) {
             numbers.take(preambleSize)
         }
@@ -17,10 +17,10 @@ class InvalidNumberFinderImpl : InvalidNumberFinder {
     }
 
     private tailrec fun scanForInvalidNumbers(
-        preamble: List<Int>,
-        encryptedData: List<Int>,
-        collected: List<Int>
-    ): List<Int> {
+        preamble: List<Long>,
+        encryptedData: List<Long>,
+        collected: List<Long>
+    ): List<Long> {
         if (encryptedData.isEmpty()) {
             return collected
         }
@@ -33,7 +33,7 @@ class InvalidNumberFinderImpl : InvalidNumberFinder {
         return scanForInvalidNumbers(newPreamble, newEncryptedData, newCollected)
     }
 
-    private fun Int.isValidNumber(preamble: List<Int>): Boolean {
+    private fun Long.isValidNumber(preamble: List<Long>): Boolean {
         val withIndex = preamble.withIndex().toList()
         return withIndex.asSequence()
             .map { indexed -> indexed to withIndex.filter { it.index != indexed.index } }
@@ -44,4 +44,25 @@ class InvalidNumberFinderImpl : InvalidNumberFinder {
                 terms.any { term + it == this }
             }
     }
+}
+
+interface ContiguousSetFinder {
+    fun findContiguousSet(sumEqualTo: Long, sequence: List<Long>): List<Long>
+}
+
+class ContiguousSetFinderImpl : ContiguousSetFinder {
+    override fun findContiguousSet(sumEqualTo: Long, sequence: List<Long>): List<Long> {
+        for (i in sequence.indices) {
+            for (j in sequence.indices) {
+                if (i < j) {
+                    val subset = sequence.subList(i, j + 1)
+                    if (subset.sum() == sumEqualTo) {
+                        return subset
+                    }
+                }
+            }
+        }
+        return emptyList()
+    }
+
 }

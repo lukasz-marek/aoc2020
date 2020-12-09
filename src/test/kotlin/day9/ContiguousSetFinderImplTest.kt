@@ -4,8 +4,7 @@ import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
-class InvalidNumberFinderImplTest {
-    private val tested = InvalidNumberFinderImpl()
+class ContiguousSetFinderImplTest {
 
     private val input = """
         35
@@ -30,13 +29,15 @@ class InvalidNumberFinderImplTest {
         576
     """.trimIndent().split("\n").map { it.toLong() }
 
+    private val tested = ContiguousSetFinderImpl()
+
     @Test
-    fun `Should successfully identify invalid value`() {
-        // given
-        val encryptedData = EncryptedData(numbers = input, preambleSize = 5)
+    fun `should successfully find result`() {
+        //given
+        val sumEqualTo = 127L
         // when
-        val invalidNumbers = tested.findInvalidNumbers(encryptedData)
+        val result = tested.findContiguousSet(sumEqualTo, input)
         // then
-        expectThat(invalidNumbers).isEqualTo(listOf(127))
+        expectThat(result).isEqualTo(listOf(15, 25, 47, 40))
     }
 }
