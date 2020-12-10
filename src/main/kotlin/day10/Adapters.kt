@@ -36,7 +36,7 @@ class ArrangementsCounterImpl : ArrangementsCounter {
     }
 
     private tailrec fun count(frontier: Map<Adapter, Long>, adapters: List<Adapter>, acc: Long): Long {
-        val newFrontier = frontier.map { entry ->
+        val newFrontier = frontier.asSequence().map { entry ->
             entry to adapters.filter { adapter ->
                 val diff = adapter.output - entry.key.output
                 diff in 1..3
