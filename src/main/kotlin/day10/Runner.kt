@@ -16,4 +16,7 @@ fun main() {
     val connector = AdaptersConnectorImpl()
     val connectionResult = connector.connect(adapters)
     println("Result it ${connectionResult[1]!! * connectionResult[3]!!}")
+
+    val counter = ArrangementsCounterImpl()
+    println("There's ${counter.count(adapters)} arrangements possible.")
 }
