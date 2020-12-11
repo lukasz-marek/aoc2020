@@ -35,17 +35,19 @@ open class SimulatorImpl : Simulator {
     }
 
     protected open fun Grid.countOccupiedNeighbours(row: Int, column: Int): Int {
-        val neighbours = mutableListOf<Place>()
+        var occupiedNeighboursCount = 0
         for (neighbourRow in (row - 1)..(row + 1)) {
             for (neighbourColumn in (column - 1)..(column + 1)) {
                 if (neighbourColumn != column || neighbourRow != row) {
                     if (neighbourRow in layout.indices && neighbourColumn in layout[neighbourRow].indices) {
-                        neighbours.add(layout[neighbourRow][neighbourColumn])
+                        if (layout[neighbourRow][neighbourColumn] == Place.TAKEN) {
+                            occupiedNeighboursCount += 1
+                        }
                     }
                 }
             }
         }
-        return neighbours.count { it == Place.TAKEN }
+        return occupiedNeighboursCount
     }
 
     private fun nextLayout(grid: Grid): List<List<Place>> {
