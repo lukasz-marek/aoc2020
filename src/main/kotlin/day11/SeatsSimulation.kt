@@ -79,18 +79,7 @@ class CorrectSimulatorImpl : SimulatorImpl() {
 
     override fun Grid.countOccupiedNeighbours(row: Int, column: Int): Int {
         val center = Pair(row, column)
-        val neighbourIndexes = buildList {
-            for (rowStep in -1..1) {
-                for (columnStep in -1..1) {
-                    if (columnStep != 0 || rowStep != 0) {
-                        val indexesToVisit = center
-                            .coordinatesSequence(rowStep, columnStep)
-                            .takeWhile { it.first in layout.indices && it.second in layout[it.first].indices }
-                        add(indexesToVisit)
-                    }
-                }
-            }
-        }
+        val neighbourIndexes = generateNeighbourIndexes(center)
 
         var occupiedNeighboursCount = 0
         sequencesLoop@ for (indexesSequence in neighbourIndexes) {
@@ -106,6 +95,20 @@ class CorrectSimulatorImpl : SimulatorImpl() {
 
         return occupiedNeighboursCount
     }
+
+    private fun Grid.generateNeighbourIndexes(center: Pair<Int, Int>) =
+        buildList {
+            for (rowStep in -1..1) {
+                for (columnStep in -1..1) {
+                    if (columnStep != 0 || rowStep != 0) {
+                        val indexesToVisit = center
+                            .coordinatesSequence(rowStep, columnStep)
+                            .takeWhile { it.first in layout.indices && it.second in layout[it.first].indices }
+                        add(indexesToVisit)
+                    }
+                }
+            }
+        }
 
     private fun Pair<Int, Int>.coordinatesSequence(rowStep: Int, columnStep: Int): Sequence<Pair<Int, Int>> {
         val rowsSequence = generateSequence(this.first) { it + rowStep }
