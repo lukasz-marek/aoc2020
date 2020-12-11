@@ -12,10 +12,17 @@ object Loader {
     }
 }
 
+@ExperimentalStdlibApi
 fun main() {
     val inputGrid = Loader.load()
     val simulator = SimulatorImpl()
     val outputGrid = simulator.runSimulations(inputGrid)
     val occupiedSeatsCount = outputGrid.layout.flatten().count { it == Place.TAKEN }
     println("There's $occupiedSeatsCount occupied seats")
+
+    val correctedSimulator = CorrectSimulatorImpl()
+    val correctOutputGrid = correctedSimulator.runSimulations(inputGrid)
+    val correctOccupiedSeatsCount = correctOutputGrid.layout.flatten().count { it == Place.TAKEN }
+    println("There's $correctOccupiedSeatsCount occupied seats after correction")
+
 }

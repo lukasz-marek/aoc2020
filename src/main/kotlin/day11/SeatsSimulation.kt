@@ -26,13 +26,15 @@ fun parseInput(input: List<String>): Grid =
         }
         .toList().let { Grid(it) }
 
-class SimulatorImpl : Simulator {
-    override tailrec fun runSimulations(grid: Grid): Grid {
+open class SimulatorImpl : Simulator {
+    protected open val threshold = 4
+
+    final override tailrec fun runSimulations(grid: Grid): Grid {
         val newLayout = nextLayout(grid)
         return if (newLayout == grid.layout) grid else runSimulations(Grid(newLayout))
     }
 
-    private fun Grid.getNeighbours(row: Int, column: Int): List<Place> {
+    protected open fun Grid.countOccupiedNeighbours(row: Int, column: Int): Int {
         val neighbours = mutableListOf<Place>()
         for (neighbourRow in (row - 1)..(row + 1)) {
             for (neighbourColumn in (column - 1)..(column + 1)) {
@@ -43,7 +45,7 @@ class SimulatorImpl : Simulator {
                 }
             }
         }
-        return neighbours
+        return neighbours.count { it == Place.TAKEN }
     }
 
     private fun nextLayout(grid: Grid): List<List<Place>> {
@@ -53,12 +55,12 @@ class SimulatorImpl : Simulator {
             for (column in grid.layout[row].indices) {
                 val newPlace = when (val place = grid.layout[row][column]) {
                     Place.EMPTY -> {
-                        val occupiedNeighbours = grid.getNeighbours(row, column).count { it == Place.TAKEN }
+                        val occupiedNeighbours = grid.countOccupiedNeighbours(row, column)
                         if (occupiedNeighbours == 0) Place.TAKEN else place
                     }
                     Place.TAKEN -> {
-                        val occupiedNeighbours = grid.getNeighbours(row, column).count { it == Place.TAKEN }
-                        if (occupiedNeighbours >= 4) Place.EMPTY else place
+                        val occupiedNeighbours = grid.countOccupiedNeighbours(row, column)
+                        if (occupiedNeighbours >= threshold) Place.EMPTY else place
                     }
                     else -> place
                 }
@@ -66,5 +68,46 @@ class SimulatorImpl : Simulator {
             }
         }
         return newLayout
+    }
+}
+
+@ExperimentalStdlibApi
+class CorrectSimulatorImpl : SimulatorImpl() {
+    override val threshold: Int = 5
+
+    override fun Grid.countOccupiedNeighbours(row: Int, column: Int): Int {
+        val center = Pair(row, column)
+        val neighbourIndexes = buildList {
+            for (rowStep in -1..1) {
+                for (columnStep in -1..1) {
+                    if (columnStep != 0 || rowStep != 0) {
+                        val indexesToVisit = center
+                            .coordinatesSequence(rowStep, columnStep)
+                            .takeWhile { it.first in layout.indices && it.second in layout[it.first].indices }
+                        add(indexesToVisit)
+                    }
+                }
+            }
+        }
+
+        var occupiedNeighboursCount = 0
+        sequencesLoop@ for (indexesSequence in neighbourIndexes) {
+            for ((rowIndex, columnIndex) in indexesSequence) {
+                if (layout[rowIndex][columnIndex] == Place.TAKEN) {
+                    occupiedNeighboursCount += 1
+                    continue@sequencesLoop
+                } else if (layout[rowIndex][columnIndex] == Place.EMPTY) {
+                    continue@sequencesLoop
+                }
+            }
+        }
+
+        return occupiedNeighboursCount
+    }
+
+    private fun Pair<Int, Int>.coordinatesSequence(rowStep: Int, columnStep: Int): Sequence<Pair<Int, Int>> {
+        val rowsSequence = generateSequence(this.first) { it + rowStep }
+        val colsSequence = generateSequence(this.second) { it + columnStep }
+        return rowsSequence.zip(colsSequence).filter { it != this }
     }
 }
