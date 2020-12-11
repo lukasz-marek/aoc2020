@@ -28,6 +28,25 @@ fun parseInput(input: List<String>): Grid =
 
 class SimulatorImpl : Simulator {
     override tailrec fun runSimulations(grid: Grid): Grid {
+        val newLayout = nextLayout(grid)
+        return if (newLayout == grid.layout) grid else runSimulations(Grid(newLayout))
+    }
+
+    private fun Grid.getNeighbours(row: Int, column: Int): List<Place> {
+        val neighbours = mutableListOf<Place>()
+        for (neighbourRow in (row - 1)..(row + 1)) {
+            for (neighbourColumn in (column - 1)..(column + 1)) {
+                if (neighbourColumn != column || neighbourRow != row) {
+                    if (neighbourRow in layout.indices && neighbourColumn in layout[neighbourRow].indices) {
+                        neighbours.add(layout[neighbourRow][neighbourColumn])
+                    }
+                }
+            }
+        }
+        return neighbours
+    }
+
+    private fun nextLayout(grid: Grid): List<List<Place>> {
         val newLayout = mutableListOf<MutableList<Place>>()
         for (row in grid.layout.indices) {
             newLayout.add(mutableListOf())
@@ -46,21 +65,6 @@ class SimulatorImpl : Simulator {
                 newLayout[row].add(newPlace)
             }
         }
-
-        return if (newLayout == grid.layout) grid else runSimulations(Grid(newLayout))
-    }
-
-    private fun Grid.getNeighbours(row: Int, column: Int): List<Place> {
-        val neighbours = mutableListOf<Place>()
-        for (neighbourRow in (row - 1)..(row + 1)) {
-            for (neighbourColumn in (column - 1)..(column + 1)) {
-                if (neighbourColumn != column || neighbourRow != row) {
-                    if (neighbourRow in layout.indices && neighbourColumn in layout[neighbourRow].indices) {
-                        neighbours.add(layout[neighbourRow][neighbourColumn])
-                    }
-                }
-            }
-        }
-        return neighbours
+        return newLayout
     }
 }
