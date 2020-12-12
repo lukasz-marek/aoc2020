@@ -59,3 +59,18 @@ class TurnRight(private val amount: Int) : NavigationInstruction {
         }
 
 }
+
+class MoveInDirection(private val direction: Direction, private val amount: Int) : NavigationInstruction {
+    override fun execute(state: State): State = with(state) {
+        state.copy(path = path + Pair(this@MoveInDirection.direction, amount))
+    }
+}
+
+interface InstructionExecutor {
+    fun execute(instructions: List<NavigationInstruction>): State
+}
+
+class InstructionExecutorImpl(private val initialState: State) : InstructionExecutor {
+    override fun execute(instructions: List<NavigationInstruction>): State =
+        instructions.fold(initialState) { state, instruction -> instruction.execute(state) }
+}
