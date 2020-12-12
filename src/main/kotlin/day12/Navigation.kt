@@ -1,5 +1,22 @@
 package day12
 
+
+private val instructionPattern = Regex("(\\w)(\\d{1,3})")
+fun parseInstruction(instruction: String): NavigationInstruction =
+    instructionPattern.matchEntire(instruction.trim())?.let {
+        val (instructionType, amount) = it.destructured
+        when (instructionType) {
+            "F" -> MoveForward(amount.toInt())
+            "R" -> TurnRight(amount.toInt())
+            "L" -> TurnLeft(amount.toInt())
+            "N" -> MoveInDirection(Direction.NORTH, amount.toInt())
+            "S" -> MoveInDirection(Direction.SOUTH, amount.toInt())
+            "W" -> MoveInDirection(Direction.WEST, amount.toInt())
+            "E" -> MoveInDirection(Direction.EAST, amount.toInt())
+            else -> throw IllegalArgumentException("$instructionType is not supported")
+        }
+    }!!
+
 enum class Direction {
     NORTH, SOUTH, EAST, WEST
 }
