@@ -31,6 +31,6 @@ fun main() {
         .minByOrNull { it.second }!!
     println("Result 1 is ${closestBus.id * (closestDeparture - passenger.arrivesAt)}")
 
-    val result2 = SequenceFinderImpl().find(buses)
+    val result2 = BacktrackingSequenceFinder().find(buses)
     println("Result 2 is $result2")
 }

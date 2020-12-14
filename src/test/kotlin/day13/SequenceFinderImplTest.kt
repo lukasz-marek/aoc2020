@@ -6,7 +6,7 @@ import strikt.assertions.isEqualTo
 
 class SequenceFinderImplTest {
 
-    private val tested = SequenceFinderImpl()
+    private val tested = BacktrackingSequenceFinder()
 
     @Test
     fun `test 1`() {

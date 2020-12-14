@@ -42,3 +42,25 @@ class SequenceFinderImpl : SequenceFinder {
         return sequenceStarter.arrivesAt
     }
 }
+
+fun Bus.departuresWithinRange(startExclusive: Long, endInclusive: Long): Sequence<Long> {
+    val actualStart = (startExclusive / id) * id
+    return generateSequence(actualStart) { it + id }.dropWhile { it < startExclusive }.takeWhile { it <= endInclusive }
+}
+
+class BacktrackingSequenceFinder : SequenceFinder {
+    override fun find(buses: List<DepartureConstraint>): Long {
+        val sortedByPeriod = buses.sortedByDescending { it.bus.id }
+        return searchForSequence(sortedByPeriod)
+    }
+
+    private fun searchForSequence(remainingConstraints: List<DepartureConstraint>): Long {
+        val constraintWithGreatestPeriod = remainingConstraints.first()
+        var timestampsSequence = constraintWithGreatestPeriod.bus.departuresWithinRange(1, Long.MAX_VALUE)
+            .map { it - constraintWithGreatestPeriod.offset }
+        for (constraint in remainingConstraints.drop(1)) {
+            timestampsSequence = timestampsSequence.filter { (it + constraint.offset) % constraint.bus.id == 0L }
+        }
+        return timestampsSequence.first()
+    }
+}
