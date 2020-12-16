@@ -55,11 +55,11 @@ fun identifyFields(tickets: List<Ticket>, rules: List<ValidationRule>): Map<Stri
 private fun inferFields(knowledge: List<Set<String>>): Map<String, Int> {
     val sorted = knowledge.withIndex()
         .sortedBy { it.value.size }
-        .map { pair -> Pair(pair.index, pair.value.toMutableSet()) }
+        .map { Pair(it.index, it.value.toMutableSet()) }
 
     val alreadySeen = sorted.first().second
 
-    for ((_,hypothesis) in sorted.drop(1)) {
+    for ((_, hypothesis) in sorted.drop(1)) {
         hypothesis.removeAll(alreadySeen)
         alreadySeen.addAll(hypothesis)
         check(hypothesis.size == 1) { "Ambiguous hypothesis $hypothesis" }
