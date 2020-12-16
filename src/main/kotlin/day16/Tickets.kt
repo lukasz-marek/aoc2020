@@ -42,3 +42,28 @@ fun parseTicket(ticket: String): Ticket {
     val numbers = ticket.split(",").map { it.trim().toInt() }
     return Ticket(numbers)
 }
+
+fun identifyFields(tickets: List<Ticket>, rules: List<ValidationRule>): Map<String, Int> {
+        val hypotheses = tickets.filter { it.isValid(rules) }
+            .map { it.rulesDescribingFields(rules) }
+            .flattenByIntersecting()
+            .map { set -> set.map { it.name }.toSet() }
+
+    return inferFields(hypotheses)
+}
+
+private fun inferFields(knowledge: List<Set<String>>): Map<String, Int> {
+    val sorted = knowledge.sortedBy { it.size }.map { set -> set.toMutableSet() }
+    val alreadySeen = sorted.first().toMutableSet()
+
+    for (hypothesis in sorted.drop(1)) {
+        hypothesis.removeAll(alreadySeen)
+        alreadySeen.addAll(hypothesis)
+        check(hypothesis.size == 1) { "Ambiguous hypothesis $hypothesis" }
+    }
+
+    return sorted.withIndex()
+        .map { (index, value) -> value.map { it to index } }
+        .flatten()
+        .toMap()
+}

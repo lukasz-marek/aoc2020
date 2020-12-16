@@ -26,14 +26,7 @@ fun main() {
     }
     println("ticket scanning error rate is $result1")
 
-    val hypotheses = with(input) {
-        otherTickets.filter { it.isValid(rules) }
-            .map { it.rulesDescribingFields(rules) }
-            .flattenByIntersecting()
-            .map { set -> set.map { it.name }.toSet() }
-    }
-
-    val identifiedFields = inferFields(hypotheses)
+    val identifiedFields = identifyFields(input.otherTickets, input.rules)
     check(identifiedFields.size == 20)
 
     val indexesForDeparture = identifiedFields
@@ -42,23 +35,8 @@ fun main() {
         .toList()
     val result2 = indexesForDeparture
         .map { input.myTicket.numbers[it] }
-        .map { it.toBigInteger() }
+        .map { it.toLong() }
         .reduce { acc, i -> acc * i }
     println("result2 is $result2")
 }
 
-private fun inferFields(knowledge: List<Set<String>>): Map<String, Int> {
-    val sorted = knowledge.sortedBy { it.size }.map { set -> set.toMutableSet() }
-    val alreadySeen = sorted.first().toMutableSet()
-
-    for (hypothesis in sorted.drop(1)) {
-        hypothesis.removeAll(alreadySeen)
-        alreadySeen.addAll(hypothesis)
-        check(hypothesis.size == 1) { "Ambiguous hypothesis $hypothesis" }
-    }
-
-    return sorted.withIndex()
-        .map { (index, value) -> value.map { it to index } }
-        .flatten()
-        .toMap()
-}
