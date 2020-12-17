@@ -3,11 +3,16 @@ package day17
 inline class Cube(val isAlive: Boolean)
 data class Grid2D(val cubes: MutableList<MutableList<Cube>>)
 data class Grid3D(val sections: MutableList<Grid2D>)
+data class Coordinates(val row: Int, val column: Int, val section: Int)
 
-fun Grid3D.get(row: Int, column: Int, section: Int): Cube = sections[section].cubes[row][column]
+fun Grid3D.get(coordinates: Coordinates): Cube =
+    sections[coordinates.section].cubes[coordinates.row][coordinates.column]
 
-fun Grid3D.neighbours(row: Int, column: Int, section: Int): List<Cube> {
-    val neighbours = mutableListOf<Cube>()
+fun Grid3D.neighbours(coordinates: Coordinates): List<Coordinates> {
+    val neighbours = mutableListOf<Coordinates>()
+    val section = coordinates.section
+    val row = coordinates.row
+    val column = coordinates.column
     for (currentSection in (section - 1)..(section + 1)) {
         if (currentSection in sections.indices) {
             for (currentRow in (row - 1)..(row + 1)) {
@@ -15,7 +20,13 @@ fun Grid3D.neighbours(row: Int, column: Int, section: Int): List<Cube> {
                     for (currentColumn in (column - 1)..(column + 1)) {
                         if (currentColumn in sections[currentSection].cubes[currentRow].indices) {
                             if (currentRow != row || currentColumn != column || currentSection != section) {
-                                neighbours.add(get(currentRow, currentColumn, currentSection))
+                                neighbours.add(
+                                    Coordinates(
+                                        row = currentRow,
+                                        column = currentColumn,
+                                        section = currentSection
+                                    )
+                                )
                             }
                         }
                     }
@@ -98,10 +109,10 @@ fun Grid3D.adjustSize() {
     }
 }
 
-fun Cube.nextValue(neighbours: List<Cube>): Cube {
+fun Cube.nextValue(aliveNeighboursCount: Int): Cube {
     return when {
-        isAlive -> Cube(neighbours.count { it.isAlive } in 2..3)
-        else -> Cube(neighbours.count { it.isAlive } == 3)
+        isAlive -> Cube(aliveNeighboursCount in 2..3)
+        else -> Cube(aliveNeighboursCount == 3)
     }
 }
 
@@ -113,9 +124,11 @@ fun iterate(grid3D: Grid3D, times: Int): Grid3D {
         val gridValues = MutableList(currentGrid.sections.size) { sectionNumber ->
             MutableList(currentGrid.sections[sectionNumber].cubes.size) { rowNumber ->
                 MutableList(currentGrid.sections[sectionNumber].cubes[rowNumber].size) { columnNumber ->
-                    val currentValue = currentGrid.get(row = rowNumber, column = columnNumber, section = sectionNumber)
-                    val neighbours = grid3D.neighbours(row = rowNumber, column = columnNumber, section = sectionNumber)
-                    currentValue.nextValue(neighbours)
+                    val currentCoordinates =
+                        Coordinates(row = rowNumber, column = columnNumber, section = sectionNumber)
+                    val currentValue = currentGrid.get(currentCoordinates)
+                    val neighboursCoordinates = grid3D.neighbours(currentCoordinates)
+                    currentValue.nextValue(neighboursCoordinates.map { currentGrid.get(it) }.count { it.isAlive })
                 }
             }
         }
