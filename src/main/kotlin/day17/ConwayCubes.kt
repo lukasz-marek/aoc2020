@@ -1,8 +1,8 @@
 package day17
 
 inline class Cube(val isAlive: Boolean)
-data class Grid2D(val cubes: MutableList<MutableList<Cube>>)
-data class Grid3D(val sections: MutableList<Grid2D>)
+data class Grid2D(val cubes: List<List<Cube>>)
+data class Grid3D(val sections: List<Grid2D>)
 data class Coordinates(val row: Int, val column: Int, val section: Int)
 
 fun Grid3D.get(coordinates: Coordinates): Cube =
@@ -76,37 +76,40 @@ fun Grid3D.resizableDirections(): Set<ResizeDirection3D> {
     return directions
 }
 
-fun Grid2D.resize(directions: Set<ResizeDirection2D>) {
+fun Grid2D.resized(directions: Set<ResizeDirection2D>): Grid2D {
+    val mutableContent = cubes.map { it.toMutableList() }.toMutableList()
     for (direction in directions) {
         when (direction) {
-            ResizeDirection2D.LEFT -> cubes.forEach { it.add(0, Cube(false)) }
-            ResizeDirection2D.RIGHT -> cubes.forEach { it.add(Cube(false)) }
-            ResizeDirection2D.UP -> cubes.add(0, MutableList(cubes.first().size) { Cube(false) })
-            ResizeDirection2D.DOWN -> cubes.add(MutableList(cubes.last().size) { Cube(false) })
+            ResizeDirection2D.LEFT -> mutableContent.forEach { it.add(0, Cube(false)) }
+            ResizeDirection2D.RIGHT -> mutableContent.forEach { it.add(Cube(false)) }
+            ResizeDirection2D.UP -> mutableContent.add(0, MutableList(mutableContent.first().size) { Cube(false) })
+            ResizeDirection2D.DOWN -> mutableContent.add(MutableList(mutableContent.last().size) { Cube(false) })
         }
     }
+    return Grid2D(mutableContent)
 }
 
-fun Grid3D.adjustSize() {
+fun Grid3D.adjusted(): Grid3D {
     val grid2DResizeDirections = sections.asSequence()
         .map { it.resizableDirections() }
         .reduce { acc, resizeDirections ->
             acc + resizeDirections
         }
 
-    sections.forEach { it.resize(grid2DResizeDirections) }
+    val mutableSections = sections.map { it.resized(grid2DResizeDirections) }.toMutableList()
 
     val grid3dResizeDirections = resizableDirections()
     for (direction in grid3dResizeDirections) {
         when (direction) {
-            ResizeDirection3D.FRONT -> with(sections.first().cubes) {
-                sections.add(0, grid2DOf(size, first().size))
+            ResizeDirection3D.FRONT -> with(mutableSections.first().cubes) {
+                mutableSections.add(0, grid2DOf(size, first().size))
             }
-            ResizeDirection3D.BACK -> with(sections.last().cubes) {
-                sections.add(grid2DOf(size, first().size))
+            ResizeDirection3D.BACK -> with(mutableSections.last().cubes) {
+                mutableSections.add(grid2DOf(size, first().size))
             }
         }
     }
+    return Grid3D(mutableSections)
 }
 
 fun Cube.nextValue(aliveNeighboursCount: Int): Cube {
@@ -117,13 +120,12 @@ fun Cube.nextValue(aliveNeighboursCount: Int): Cube {
 }
 
 fun iterate(grid3D: Grid3D, times: Int): Grid3D {
-    var currentGrid = grid3D
+    var currentGrid = grid3D.adjusted()
     for (iteration in 0 until times) {
         currentGrid.sections.flatMap { it.cubes.flatten() }.count { it.isAlive }.let { println("$it at $iteration") }
-        currentGrid.adjustSize()
-        val gridValues = MutableList(currentGrid.sections.size) { sectionNumber ->
-            MutableList(currentGrid.sections[sectionNumber].cubes.size) { rowNumber ->
-                MutableList(currentGrid.sections[sectionNumber].cubes[rowNumber].size) { columnNumber ->
+        val gridValues = List(currentGrid.sections.size) { sectionNumber ->
+            List(currentGrid.sections[sectionNumber].cubes.size) { rowNumber ->
+                List(currentGrid.sections[sectionNumber].cubes[rowNumber].size) { columnNumber ->
                     val currentCoordinates =
                         Coordinates(row = rowNumber, column = columnNumber, section = sectionNumber)
                     val currentValue = currentGrid.get(currentCoordinates)
@@ -132,7 +134,7 @@ fun iterate(grid3D: Grid3D, times: Int): Grid3D {
                 }
             }
         }
-        currentGrid = Grid3D(gridValues.map { section -> Grid2D(section) }.toMutableList())
+        currentGrid = Grid3D(gridValues.map { section -> Grid2D(section) }).adjusted()
     }
     return currentGrid
 }
