@@ -1,7 +1,5 @@
-import day17.Cube
-import day17.Grid2D
-import day17.Grid3D
-import day17.iterate
+package day17
+
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
