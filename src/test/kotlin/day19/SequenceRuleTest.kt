@@ -38,4 +38,36 @@ class SequenceRuleTest {
         // then
         expectThat(result).isEqualTo(emptyList())
     }
+
+    @Test
+    fun `complex rule test 1`() {
+        /**
+         * 0: 1 2
+        1: "a"
+        2: 1 3 | 3 1
+        3: "b"
+         */
+        // given
+        val tested = SequenceRule(
+            listOf(
+                TerminalRule('a'),
+                AlternativeRule(
+                    listOf(
+                        SequenceRule(listOf(TerminalRule('a'), TerminalRule('b'))),
+                        SequenceRule(listOf(TerminalRule('b'), TerminalRule('a')))
+                    )
+                )
+            )
+        )
+        val fistSequence = listOf('a', 'a', 'b')
+        val secondSequence = listOf('a', 'b', 'a')
+        // when
+        val result1 = tested.match(fistSequence)
+        // then
+        expectThat(result1).isEqualTo(listOf(RuleMatch(listOf('a', 'a', 'b'))))
+        // when
+        val result2 = tested.match(secondSequence)
+        // then
+        expectThat(result2).isEqualTo(listOf(RuleMatch(listOf('a', 'b', 'a'))))
+    }
 }
