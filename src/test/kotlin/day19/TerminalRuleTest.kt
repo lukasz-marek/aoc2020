@@ -1,5 +1,7 @@
 package day19
 
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -14,7 +16,7 @@ class TerminalRuleTest {
         // given
         val tested = TerminalRule(acceptedValue)
         // when
-        val result = tested.match(listOf(acceptedValue)).toList()
+        val result = runBlocking{tested.match(listOf(acceptedValue)).toList()}
         // then
         expectThat(result).isEqualTo(listOf(RuleMatch(listOf(acceptedValue))))
     }
@@ -24,7 +26,7 @@ class TerminalRuleTest {
         // given
         val tested = TerminalRule('a')
         // when
-        val result = tested.match(listOf('a', 'b', 'c')).toList()
+        val result = runBlocking{tested.match(listOf('a', 'b', 'c')).toList()}
         // then
         expectThat(result).isEqualTo(listOf(RuleMatch(listOf('a'))))
     }
@@ -34,7 +36,7 @@ class TerminalRuleTest {
         // given
         val tested = TerminalRule('b')
         // when
-        val result = tested.match(listOf('a', 'b', 'c')).toList()
+        val result = runBlocking{tested.match(listOf('a', 'b', 'c')).toList()}
         // then
         expectThat(result).isEqualTo(emptyList())
     }
@@ -45,7 +47,7 @@ class TerminalRuleTest {
         // given
         val tested = TerminalRule('z')
         // when
-        val result = tested.match(listOf(invalidValue)).toList()
+        val result = runBlocking { tested.match(listOf(invalidValue)).toList() }
         // then
         expectThat(result).isEqualTo(emptyList())
     }

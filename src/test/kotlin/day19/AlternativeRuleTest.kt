@@ -1,10 +1,14 @@
 package day19
 
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 
+@FlowPreview
 class AlternativeRuleTest {
 
     @Test
@@ -13,11 +17,11 @@ class AlternativeRuleTest {
         val tested =
             AlternativeRule(listOf(SequenceRule(listOf(TerminalRule('a'))), SequenceRule(listOf(TerminalRule('b')))))
         // when
-        val matchedA = tested.match(listOf('a')).toList()
+        val matchedA = runBlocking { tested.match(listOf('a')).toList() }
         // then
         expectThat(matchedA).isEqualTo(listOf(RuleMatch(listOf('a'))))
         // when
-        val matchedB = tested.match(listOf('b')).toList()
+        val matchedB = runBlocking { tested.match(listOf('b')).toList() }
         // then
         expectThat(matchedB).isEqualTo(listOf(RuleMatch(listOf('b'))))
     }
@@ -28,7 +32,7 @@ class AlternativeRuleTest {
         val tested =
             AlternativeRule(listOf(SequenceRule(listOf(TerminalRule('a'))), SequenceRule(listOf(TerminalRule('b')))))
         // when
-        val matchedA = tested.match(listOf('a', 'b')).toList()
+        val matchedA = runBlocking { tested.match(listOf('a', 'b')).toList() }
         // then
         expectThat(matchedA).isEqualTo(listOf(RuleMatch(listOf('a'))))
     }

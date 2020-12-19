@@ -1,51 +1,57 @@
 package day19
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.runBlocking
+
 
 data class RuleMatch(val matched: List<Char>)
 
 interface ProductionRule {
-    fun match(input: List<Char>): Sequence<RuleMatch>
+    suspend fun match(input: List<Char>): Flow<RuleMatch>
 }
 
 data class RuleReference(val id: Int, val mapping: Map<Int, ProductionRule>) : ProductionRule {
-    override fun match(input: List<Char>): Sequence<RuleMatch> =
+    override suspend fun match(input: List<Char>): Flow<RuleMatch> =
         mapping[id]!!.match(input)
 }
 
 data class TerminalRule(val symbol: Char) : ProductionRule {
-    override fun match(input: List<Char>): Sequence<RuleMatch> = sequence {
+    override suspend fun match(input: List<Char>): Flow<RuleMatch> = flow {
         if (input.isNotEmpty() && input.first() == symbol)
-            yield(RuleMatch(listOf(input.first())))
+            emit(RuleMatch(listOf(input.first())))
     }
 }
 
 data class SequenceRule(val symbolSequence: List<ProductionRule>) : ProductionRule {
-    override fun match(input: List<Char>): Sequence<RuleMatch> = match(input, symbolSequence).distinct()
+    override suspend fun match(input: List<Char>): Flow<RuleMatch> = match(input, symbolSequence)
 
-    private fun match(input: List<Char>, rules: List<ProductionRule>): Sequence<RuleMatch> {
+    private suspend fun match(input: List<Char>, rules: List<ProductionRule>): Flow<RuleMatch> {
         val currentRule = rules.first()
         val remainingRules = rules.drop(1)
-        return sequence {
-            for (possibleMatch in currentRule.match(input)) {
+        return flow {
+            currentRule.match(input).collect { possibleMatch ->
                 if (remainingRules.isEmpty()) {
-                    yield(possibleMatch)
+                    emit(possibleMatch)
                 } else {
                     val remainingInput = input.drop(possibleMatch.matched.size)
                     val subMatches = match(remainingInput, remainingRules)
-                    for (subMatch in subMatches) {
-                        yield(RuleMatch(possibleMatch.matched + subMatch.matched))
-                    }
+                    emitAll(subMatches.map { RuleMatch(possibleMatch.matched + it.matched) })
                 }
             }
         }
     }
 }
 
+@FlowPreview
 data class AlternativeRule(val alternatives: List<ProductionRule>) : ProductionRule {
-    override fun match(input: List<Char>): Sequence<RuleMatch> =
-        alternatives.asSequence().flatMap { it.match(input) }.distinct()
+    override suspend fun match(input: List<Char>): Flow<RuleMatch> {
+        return alternatives.asFlow().map { it.match(input) }.flattenConcat()
+    }
 }
 
+@FlowPreview
 fun parseRules(rules: List<String>): Map<Int, ProductionRule> {
     val registry = mutableMapOf<Int, ProductionRule>()
     for (line in rules) {
@@ -57,6 +63,8 @@ fun parseRules(rules: List<String>): Map<Int, ProductionRule> {
 
 private val terminalRulePattern = Regex("^(\\d+): \"(\\w)\"$")
 private val nonTerminalRulePattern = Regex("^(\\d+): ((\\d+)( (\\d+))*( \\| (\\d+)( (\\d+))*)*)$")
+
+@FlowPreview
 fun parseRule(rule: String, mapping: Map<Int, ProductionRule>): Pair<Int, ProductionRule> {
     return when {
         terminalRulePattern.matches(rule) -> {
@@ -90,5 +98,7 @@ fun parseRule(rule: String, mapping: Map<Int, ProductionRule>): Pair<Int, Produc
 fun match(rules: Map<Int, ProductionRule>, input: String): Boolean {
     val rootRule = rules[0]!!
     val inputSequence = input.toCharArray().toList()
-    return rootRule.match(inputSequence).any { it.matched.size == inputSequence.size }
+    return runBlocking(Dispatchers.Default) {
+        rootRule.match(inputSequence).count { it.matched.size == input.length } > 0
+    }
 }
