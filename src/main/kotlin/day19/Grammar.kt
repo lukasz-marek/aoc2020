@@ -7,6 +7,8 @@ interface ProductionRule {
     fun match(input: List<Char>): List<RuleMatch>
 }
 
+data class RuleReference(val id: Int, val mapping: Map<Int, ProductionRule>) : ProductionRule by mapping[id]!!
+
 data class TerminalRule(val symbol: Char) : ProductionRule {
     override fun match(input: List<Char>): List<RuleMatch> =
         if (input.first() == symbol)
