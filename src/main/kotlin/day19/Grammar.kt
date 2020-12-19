@@ -36,7 +36,7 @@ data class SequenceRule(val symbolSequence: List<ProductionRule>) : ProductionRu
     }
 }
 
-data class AlternativeRule(val alternatives: List<ProductionRule>) : ProductionRule {
+data class AlternativeRule(val alternatives: List<List<ProductionRule>>) : ProductionRule {
     override fun match(input: List<Char>): List<RuleMatch> =
-        alternatives.flatMap { it.match(input) }.distinct()
+        alternatives.flatMap { SequenceRule(it).match(input) }.distinct()
 }
