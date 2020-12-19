@@ -13,11 +13,11 @@ class AlternativeRuleTest {
         val tested =
             AlternativeRule(listOf(SequenceRule(listOf(TerminalRule('a'))), SequenceRule(listOf(TerminalRule('b')))))
         // when
-        val matchedA = tested.match(listOf('a'))
+        val matchedA = tested.match(listOf('a')).toList()
         // then
         expectThat(matchedA).isEqualTo(listOf(RuleMatch(listOf('a'))))
         // when
-        val matchedB = tested.match(listOf('b'))
+        val matchedB = tested.match(listOf('b')).toList()
         // then
         expectThat(matchedB).isEqualTo(listOf(RuleMatch(listOf('b'))))
     }
@@ -28,7 +28,7 @@ class AlternativeRuleTest {
         val tested =
             AlternativeRule(listOf(SequenceRule(listOf(TerminalRule('a'))), SequenceRule(listOf(TerminalRule('b')))))
         // when
-        val matchedA = tested.match(listOf('a', 'b'))
+        val matchedA = tested.match(listOf('a', 'b')).toList()
         // then
         expectThat(matchedA).isEqualTo(listOf(RuleMatch(listOf('a'))))
     }

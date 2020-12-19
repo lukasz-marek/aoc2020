@@ -14,7 +14,7 @@ class TerminalRuleTest {
         // given
         val tested = TerminalRule(acceptedValue)
         // when
-        val result = tested.match(listOf(acceptedValue))
+        val result = tested.match(listOf(acceptedValue)).toList()
         // then
         expectThat(result).isEqualTo(listOf(RuleMatch(listOf(acceptedValue))))
     }
@@ -24,7 +24,7 @@ class TerminalRuleTest {
         // given
         val tested = TerminalRule('a')
         // when
-        val result = tested.match(listOf('a', 'b', 'c'))
+        val result = tested.match(listOf('a', 'b', 'c')).toList()
         // then
         expectThat(result).isEqualTo(listOf(RuleMatch(listOf('a'))))
     }
@@ -34,7 +34,7 @@ class TerminalRuleTest {
         // given
         val tested = TerminalRule('b')
         // when
-        val result = tested.match(listOf('a', 'b', 'c'))
+        val result = tested.match(listOf('a', 'b', 'c')).toList()
         // then
         expectThat(result).isEqualTo(emptyList())
     }
@@ -45,7 +45,7 @@ class TerminalRuleTest {
         // given
         val tested = TerminalRule('z')
         // when
-        val result = tested.match(listOf(invalidValue))
+        val result = tested.match(listOf(invalidValue)).toList()
         // then
         expectThat(result).isEqualTo(emptyList())
     }

@@ -12,7 +12,7 @@ class SequenceRuleTest {
         val tested = SequenceRule(listOf(TerminalRule('a'), TerminalRule('b')))
         val symbols = listOf('a', 'b')
         // when
-        val result = tested.match(symbols)
+        val result = tested.match(symbols).toList()
         // then
         expectThat(result).isEqualTo(listOf(RuleMatch(listOf('a', 'b'))))
     }
@@ -23,7 +23,7 @@ class SequenceRuleTest {
         val tested = SequenceRule(listOf(TerminalRule('a'), TerminalRule('b')))
         val symbols = listOf('a', 'b')
         // when
-        val result = tested.match(symbols)
+        val result = tested.match(symbols).toList()
         // then
         expectThat(result).isEqualTo(listOf(RuleMatch(listOf('a', 'b'))))
     }
@@ -34,7 +34,7 @@ class SequenceRuleTest {
         val tested = SequenceRule(listOf(TerminalRule('a'), TerminalRule('b')))
         val symbols = listOf('a', 'a', 'b')
         // when
-        val result = tested.match(symbols)
+        val result = tested.match(symbols).toList()
         // then
         expectThat(result).isEqualTo(emptyList())
     }
@@ -62,11 +62,11 @@ class SequenceRuleTest {
         val fistSequence = listOf('a', 'a', 'b')
         val secondSequence = listOf('a', 'b', 'a')
         // when
-        val result1 = tested.match(fistSequence)
+        val result1 = tested.match(fistSequence).toList()
         // then
         expectThat(result1).isEqualTo(listOf(RuleMatch(listOf('a', 'a', 'b'))))
         // when
-        val result2 = tested.match(secondSequence)
+        val result2 = tested.match(secondSequence).toList()
         // then
         expectThat(result2).isEqualTo(listOf(RuleMatch(listOf('a', 'b', 'a'))))
     }

@@ -4,46 +4,46 @@ package day19
 data class RuleMatch(val matched: List<Char>)
 
 interface ProductionRule {
-    fun match(input: List<Char>): List<RuleMatch>
+    fun match(input: List<Char>): Sequence<RuleMatch>
 }
 
 data class RuleReference(val id: Int, val mapping: Map<Int, ProductionRule>) : ProductionRule {
-    override fun match(input: List<Char>): List<RuleMatch> =
+    override fun match(input: List<Char>): Sequence<RuleMatch> =
         mapping[id]!!.match(input)
 }
 
 data class TerminalRule(val symbol: Char) : ProductionRule {
-    override fun match(input: List<Char>): List<RuleMatch> =
+    override fun match(input: List<Char>): Sequence<RuleMatch> = sequence {
         if (input.isNotEmpty() && input.first() == symbol)
-            listOf(RuleMatch(listOf(input.first())))
-        else emptyList()
+            yield(RuleMatch(listOf(input.first())))
+    }
 }
 
 data class SequenceRule(val symbolSequence: List<ProductionRule>) : ProductionRule {
-    override fun match(input: List<Char>): List<RuleMatch> = match(input, symbolSequence).distinct()
+    override fun match(input: List<Char>): Sequence<RuleMatch> = match(input, symbolSequence).distinct()
 
-    private fun match(input: List<Char>, rules: List<ProductionRule>): List<RuleMatch> {
+    private fun match(input: List<Char>, rules: List<ProductionRule>): Sequence<RuleMatch> {
         val currentRule = rules.first()
         val remainingRules = rules.drop(1)
-        val matchedResults = mutableListOf<RuleMatch>()
-        for (possibleMatch in currentRule.match(input)) {
-            if (remainingRules.isEmpty()) {
-                matchedResults.add(possibleMatch)
-            } else {
-                val remainingInput = input.drop(possibleMatch.matched.size)
-                val subMatches = match(remainingInput, remainingRules)
-                for (subMatch in subMatches) {
-                    matchedResults.add(RuleMatch(possibleMatch.matched + subMatch.matched))
+        return sequence {
+            for (possibleMatch in currentRule.match(input)) {
+                if (remainingRules.isEmpty()) {
+                    yield(possibleMatch)
+                } else {
+                    val remainingInput = input.drop(possibleMatch.matched.size)
+                    val subMatches = match(remainingInput, remainingRules)
+                    for (subMatch in subMatches) {
+                        yield(RuleMatch(possibleMatch.matched + subMatch.matched))
+                    }
                 }
             }
         }
-        return matchedResults
     }
 }
 
 data class AlternativeRule(val alternatives: List<ProductionRule>) : ProductionRule {
-    override fun match(input: List<Char>): List<RuleMatch> =
-        alternatives.flatMap { it.match(input) }.distinct()
+    override fun match(input: List<Char>): Sequence<RuleMatch> =
+        alternatives.asSequence().flatMap { it.match(input) }.distinct()
 }
 
 fun parseRules(rules: List<String>): Map<Int, ProductionRule> {
