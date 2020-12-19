@@ -1,7 +1,5 @@
 package day19
 
-import java.lang.IllegalStateException
-
 
 data class RuleMatch(val matched: List<Char>)
 
@@ -43,9 +41,9 @@ data class SequenceRule(val symbolSequence: List<ProductionRule>) : ProductionRu
     }
 }
 
-data class AlternativeRule(val alternatives: List<List<ProductionRule>>) : ProductionRule {
+data class AlternativeRule(val alternatives: List<ProductionRule>) : ProductionRule {
     override fun match(input: List<Char>): List<RuleMatch> =
-        alternatives.flatMap { SequenceRule(it).match(input) }.distinct()
+        alternatives.flatMap { it.match(input) }.distinct()
 }
 
 fun parseRules(rules: List<String>): Map<Int, ProductionRule> {
@@ -81,7 +79,7 @@ fun parseRule(rule: String, mapping: Map<Int, ProductionRule>): Pair<Int, Produc
             val parsedRule = if (alternatives.size == 1) {
                 SequenceRule(alternatives.first())
             } else {
-                AlternativeRule(alternatives)
+                AlternativeRule(alternatives.map { SequenceRule(it) })
             }
             Pair(ruleId.toInt(), parsedRule)
         }

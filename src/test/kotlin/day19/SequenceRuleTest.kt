@@ -53,8 +53,8 @@ class SequenceRuleTest {
                 TerminalRule('a'),
                 AlternativeRule(
                     listOf(
-                        listOf(TerminalRule('a'), TerminalRule('b')),
-                        listOf(TerminalRule('b'), TerminalRule('a'))
+                        SequenceRule(listOf(TerminalRule('a'), TerminalRule('b'))),
+                        SequenceRule(listOf(TerminalRule('b'), TerminalRule('a'))),
                     )
                 )
             )

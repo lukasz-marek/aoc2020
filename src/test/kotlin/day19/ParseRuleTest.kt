@@ -46,8 +46,8 @@ class ParseRuleTest {
             Pair(
                 4, AlternativeRule(
                     listOf(
-                        listOf(RuleReference(5, emptyMap())),
-                        listOf(RuleReference(6, emptyMap()))
+                        SequenceRule(listOf(RuleReference(5, emptyMap()))),
+                        SequenceRule(listOf(RuleReference(6, emptyMap()))),
                     )
                 )
             )

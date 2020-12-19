@@ -10,7 +10,8 @@ class AlternativeRuleTest {
     @Test
     fun `should accept either a or b`() {
         // given
-        val tested = AlternativeRule(listOf(listOf(TerminalRule('a')), listOf(TerminalRule('b'))))
+        val tested =
+            AlternativeRule(listOf(SequenceRule(listOf(TerminalRule('a'))), SequenceRule(listOf(TerminalRule('b')))))
         // when
         val matchedA = tested.match(listOf('a'))
         // then
@@ -24,9 +25,10 @@ class AlternativeRuleTest {
     @Test
     fun `should only accept a from ab`() {
         // given
-        val tested = AlternativeRule(listOf(listOf(TerminalRule('a')), listOf(TerminalRule('b'))))
+        val tested =
+            AlternativeRule(listOf(SequenceRule(listOf(TerminalRule('a'))), SequenceRule(listOf(TerminalRule('b')))))
         // when
-        val matchedA = tested.match(listOf('a','b'))
+        val matchedA = tested.match(listOf('a', 'b'))
         // then
         expectThat(matchedA).isEqualTo(listOf(RuleMatch(listOf('a'))))
     }
