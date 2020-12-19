@@ -11,7 +11,7 @@ class ConvertToReversePolishNotationTest {
         // given
         val expression = "7"
         // when
-        val result = convertToReversePolishNotation(expression)
+        val result = convertToReversePolishNotation(expression, firstPrecedenceTable)
         // then
         expectThat(result).isEqualTo(listOf('7'))
     }
@@ -21,7 +21,7 @@ class ConvertToReversePolishNotationTest {
         // given
         val expression = "7 + 1"
         // when
-        val result = convertToReversePolishNotation(expression)
+        val result = convertToReversePolishNotation(expression, firstPrecedenceTable)
         // then
         expectThat(result).isEqualTo(listOf('7', '1', '+'))
     }
@@ -31,7 +31,7 @@ class ConvertToReversePolishNotationTest {
         // given
         val expression = "7 * 1"
         // when
-        val result = convertToReversePolishNotation(expression)
+        val result = convertToReversePolishNotation(expression, firstPrecedenceTable)
         // then
         expectThat(result).isEqualTo(listOf('7', '1', '*'))
     }
@@ -41,7 +41,7 @@ class ConvertToReversePolishNotationTest {
         // given
         val expression = "7 + 1 + 5"
         // when
-        val result = convertToReversePolishNotation(expression)
+        val result = convertToReversePolishNotation(expression, firstPrecedenceTable)
         // then
         expectThat(result).isEqualTo(listOf('7', '1', '+', '5', '+'))
     }
@@ -51,7 +51,7 @@ class ConvertToReversePolishNotationTest {
         // given
         val expression = "7 * 1 * 5"
         // when
-        val result = convertToReversePolishNotation(expression)
+        val result = convertToReversePolishNotation(expression, firstPrecedenceTable)
         // then
         expectThat(result).isEqualTo(listOf('7', '1', '*', '5', '*'))
     }
@@ -61,7 +61,7 @@ class ConvertToReversePolishNotationTest {
         // given
         val expression = "7 * 1 + 5"
         // when
-        val result = convertToReversePolishNotation(expression)
+        val result = convertToReversePolishNotation(expression, firstPrecedenceTable)
         // then
         expectThat(result).isEqualTo(listOf('7', '1', '*', '5', '+'))
     }
@@ -71,7 +71,7 @@ class ConvertToReversePolishNotationTest {
         // given
         val expression = "7 + 1 * 5"
         // when
-        val result = convertToReversePolishNotation(expression)
+        val result = convertToReversePolishNotation(expression, firstPrecedenceTable)
         // then
         expectThat(result).isEqualTo(listOf('7', '1', '+', '5', '*'))
     }
@@ -81,7 +81,7 @@ class ConvertToReversePolishNotationTest {
         // given
         val expression = "(5)"
         // when
-        val result = convertToReversePolishNotation(expression)
+        val result = convertToReversePolishNotation(expression, firstPrecedenceTable)
         // then
         expectThat(result).isEqualTo(listOf('5'))
     }
@@ -91,7 +91,7 @@ class ConvertToReversePolishNotationTest {
         // given
         val expression = "(5 + 7)"
         // when
-        val result = convertToReversePolishNotation(expression)
+        val result = convertToReversePolishNotation(expression, firstPrecedenceTable)
         // then
         expectThat(result).isEqualTo(listOf('5', '7', '+'))
     }
@@ -101,7 +101,7 @@ class ConvertToReversePolishNotationTest {
         // given
         val expression = "(5 * 7)"
         // when
-        val result = convertToReversePolishNotation(expression)
+        val result = convertToReversePolishNotation(expression, firstPrecedenceTable)
         // then
         expectThat(result).isEqualTo(listOf('5', '7', '*'))
     }
@@ -111,7 +111,7 @@ class ConvertToReversePolishNotationTest {
         // given
         val expression = "(7 + 1) * 5"
         // when
-        val result = convertToReversePolishNotation(expression)
+        val result = convertToReversePolishNotation(expression, firstPrecedenceTable)
         // then
         expectThat(result).isEqualTo(listOf('7', '1', '+', '5', '*'))
     }
@@ -121,7 +121,7 @@ class ConvertToReversePolishNotationTest {
         // given
         val expression = "7 + (1 * 5)"
         // when
-        val result = convertToReversePolishNotation(expression)
+        val result = convertToReversePolishNotation(expression, firstPrecedenceTable)
         // then
         expectThat(result).isEqualTo(listOf('7', '1', '5', '*', '+'))
     }
@@ -131,7 +131,7 @@ class ConvertToReversePolishNotationTest {
         // given
         val expression = "8 * 1 + (5 * 7 + 2)"
         // when
-        val result = convertToReversePolishNotation(expression)
+        val result = convertToReversePolishNotation(expression, firstPrecedenceTable)
         // then
         expectThat(result).isEqualTo(listOf('8', '1', '*', '5', '7', '*', '2', '+', '+'))
     }
@@ -141,7 +141,7 @@ class ConvertToReversePolishNotationTest {
         // given
         val expression = "2 * 3 + (4 * 5)"
         // when
-        val result = convertToReversePolishNotation(expression)
+        val result = convertToReversePolishNotation(expression, firstPrecedenceTable)
         // then
         expectThat(result).isEqualTo(listOf('2', '3', '*', '4', '5', '*', '+'))
     }
@@ -151,7 +151,7 @@ class ConvertToReversePolishNotationTest {
         // given
         val expression = "5 + (8 * 3 + 9 + 3 * 4 * 3)"
         // when
-        val result = convertToReversePolishNotation(expression)
+        val result = convertToReversePolishNotation(expression, firstPrecedenceTable)
         // then
         expectThat(result).isEqualTo(listOf('5', '8', '3', '*', '9', '+', '3', '+', '4', '*', '3', '*', '+'))
     }
@@ -161,7 +161,7 @@ class ConvertToReversePolishNotationTest {
         // given
         val expression = "((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2"
         // when
-        val result = convertToReversePolishNotation(expression)
+        val result = convertToReversePolishNotation(expression, firstPrecedenceTable)
         // then
         expectThat(result).isEqualTo(
             listOf(

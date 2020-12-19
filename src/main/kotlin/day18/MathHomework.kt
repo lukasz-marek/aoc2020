@@ -1,13 +1,17 @@
 package day18
 
-fun convertToReversePolishNotation(expression: String): List<Char> {
+val firstPrecedenceTable = mapOf('+' to 0, '*' to 0)
+val secondPrecedenceTable = mapOf('+' to 1, '*' to 0)
+fun convertToReversePolishNotation(expression: String, precedenceTable: Map<Char, Int>): List<Char> {
     val outputQueue = ArrayDeque<Char>()
     val stack = mutableListOf<Char>()
     for (symbol in expression.asSequence().filterNot { it.isWhitespace() }) {
         when {
             symbol.isDigit() -> outputQueue.add(symbol)
             symbol.isOperator() -> {
-                while (stack.isNotEmpty() && stack.first().isOperator()) {
+                while (stack.isNotEmpty() && stack.first().isOperator()
+                    && precedenceTable[stack.first()]!! >= precedenceTable[symbol]!!
+                ) {
                     outputQueue.add(stack.pop())
                 }
                 stack.push(symbol)
