@@ -33,8 +33,8 @@ private fun Char.isOperator() = this == '+' || this == '*'
 private fun <T> MutableList<T>.push(item: T) = add(0, item)
 private fun <T> MutableList<T>.pop() = removeAt(0)
 
-fun reduceExpression(expression: List<Char>): Int {
-    val operands = mutableListOf<Int>()
+fun reduceExpression(expression: List<Char>): Long {
+    val operands = mutableListOf<Long>()
     for (symbol in expression) {
         when (symbol) {
             '*' -> {
@@ -46,7 +46,7 @@ fun reduceExpression(expression: List<Char>): Int {
                 operands.push(sum)
             }
             else -> {
-                operands.push(Character.getNumericValue(symbol))
+                operands.push(Character.getNumericValue(symbol).toLong())
             }
         }
     }
