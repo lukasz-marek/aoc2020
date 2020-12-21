@@ -21,7 +21,7 @@ fun main() {
     println("Ingredients: ${allIngredients.size}")
     println("Allergens: ${allAllergens.size}")
 
-    val solver = SimpleRecursiveSolver()
+    val solver = SmartRecursiveSolver()
     val assignments = solver.solve(foods)!!
     val ingredientsWithoutAllergens = assignments.filterValues { it == NoAllergen }.keys
     var result1 = 0
@@ -32,5 +32,5 @@ fun main() {
             }
         }
     }
-    println("Part 1 result is $result1")
+    println("Part 1 result is $result1 thanks to smart recursive solver")
 }

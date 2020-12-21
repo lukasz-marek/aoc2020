@@ -87,8 +87,8 @@ class SmartRecursiveSolver : Solver {
 
         for (allergen in allergens + NoAllergen) {
             solution[ingredient] = allergen
-            val noConflicts = foods.all { !it.isConflicting(solution) }
-            if (noConflicts) {
+            val hasConflicts = foods.any { it.isConflicting(solution) }
+            if (!hasConflicts) {
                 val maybeSolution =
                     solve(foodsByIngredient, remainingIngredients, allergens - allergen, solution)
                 if (maybeSolution != null) {
@@ -102,7 +102,7 @@ class SmartRecursiveSolver : Solver {
     private fun Food.isConflicting(mapping: Map<Ingredient, AbstractAllergen>): Boolean {
         val expectedAllergens = this.allergens
         val detectedAllergens = this.ingredients.mapNotNull { mapping[it] }
-        return detectedAllergens.containsAll(expectedAllergens) || expectedAllergens.asSequence()
+        return expectedAllergens.asSequence()
             .filterNot { it in detectedAllergens }.any { it in mapping.values }
     }
 
