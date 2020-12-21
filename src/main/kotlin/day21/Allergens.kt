@@ -1,12 +1,19 @@
 package day21
 
-import kotlin.math.exp
-
 sealed class Allergen
 object EmptyAllergen : Allergen()
 data class ConcreteAllergen(val name: String) : Allergen()
 inline class Ingredient(val name: String)
 data class Food(val ingredients: Set<Ingredient>, val allergens: Set<Allergen>)
+
+private val foodPattern = Regex("^(.+) \\(contains (.+)\\)$")
+fun parseFood(food: String): Food{
+    val (ingredientsPart, allergensPart) = foodPattern.matchEntire(food)!!.destructured
+    val ingredients = ingredientsPart.split(" ").asSequence().filter { it.isNotEmpty() }.map { it.trim() }.map { Ingredient(it) }.toSet()
+    val allergens = allergensPart.split(",").asSequence().filter { it.isNotEmpty() }.map { it.trim() }.map { ConcreteAllergen(it) }.toSet()
+    return Food(ingredients, allergens)
+}
+
 
 interface Solver {
     fun solve(foods: List<Food>): Map<Ingredient, Allergen>?
