@@ -23,7 +23,7 @@ fun main() {
 
     val solver = SimpleRecursiveSolver()
     val assignments = solver.solve(foods)!!
-    val ingredientsWithoutAllergens = assignments.filterValues { it == EmptyAllergen }.keys
+    val ingredientsWithoutAllergens = assignments.filterValues { it == NoAllergen }.keys
     var result1 = 0
     for(ingredient in ingredientsWithoutAllergens){
         for(food in foods){

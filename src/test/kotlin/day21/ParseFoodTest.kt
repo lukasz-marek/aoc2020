@@ -14,7 +14,7 @@ class ParseFoodTest {
         // then
         expectThat(parsed).isEqualTo(Food(
             ingredients = setOf(Ingredient("sqjhc"),Ingredient("fvjkl")),
-        allergens = setOf(ConcreteAllergen("soy"))))
+        allergens = setOf(Allergen("soy"))))
     }
 
     @Test
@@ -26,6 +26,6 @@ class ParseFoodTest {
         // then
         expectThat(parsed).isEqualTo(Food(
             ingredients = setOf(Ingredient("mxmxvkd"),Ingredient("kfcds"),Ingredient("sqjhc"),Ingredient("nhms")),
-            allergens = setOf(ConcreteAllergen("dairy"),ConcreteAllergen("fish"))))
+            allergens = setOf(Allergen("dairy"),Allergen("fish"))))
     }
 }

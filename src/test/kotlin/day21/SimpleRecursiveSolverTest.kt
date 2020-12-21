@@ -19,19 +19,19 @@ class SimpleRecursiveSolverTest {
         val foods = listOf(
             Food(
                 setOf("mxmxvkd", "kfcds", "sqjhc", "nhms").map { Ingredient(it) }.toSet(),
-                setOf("dairy", "fish").map { ConcreteAllergen(it) }.toSet()
+                setOf("dairy", "fish").map { Allergen(it) }.toSet()
             ),
             Food(
                 setOf("trh", "fvjkl", "sbzzf", "mxmxvkd").map { Ingredient(it) }.toSet(),
-                setOf("dairy").map { ConcreteAllergen(it) }.toSet()
+                setOf("dairy").map { Allergen(it) }.toSet()
             ),
             Food(
                 setOf("sqjhc", "fvjkl").map { Ingredient(it) }.toSet(),
-                setOf("soy").map { ConcreteAllergen(it) }.toSet()
+                setOf("soy").map { Allergen(it) }.toSet()
             ),
             Food(
                 setOf("sqjhc", "mxmxvkd", "sbzzf").map { Ingredient(it) }.toSet(),
-                setOf("fish").map { ConcreteAllergen(it) }.toSet()
+                setOf("fish").map { Allergen(it) }.toSet()
             )
         )
         // when
@@ -39,10 +39,10 @@ class SimpleRecursiveSolverTest {
         // then
         expectThat(solution).isNotNull().and {
 //            kfcds, nhms, sbzzf, or trh
-            get { get(Ingredient("kfcds")) }.isEqualTo(EmptyAllergen)
-            get { get(Ingredient("nhms")) }.isEqualTo(EmptyAllergen)
-            get { get(Ingredient("sbzzf")) }.isEqualTo(EmptyAllergen)
-            get { get(Ingredient("trh")) }.isEqualTo(EmptyAllergen)
+            get { get(Ingredient("kfcds")) }.isEqualTo(NoAllergen)
+            get { get(Ingredient("nhms")) }.isEqualTo(NoAllergen)
+            get { get(Ingredient("sbzzf")) }.isEqualTo(NoAllergen)
+            get { get(Ingredient("trh")) }.isEqualTo(NoAllergen)
         }
     }
 }
