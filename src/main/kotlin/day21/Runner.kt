@@ -32,5 +32,9 @@ fun main() {
             }
         }
     }
-    println("Part 1 result is $result1 thanks to smart recursive solver")
+    println("Part 1 result is $result1")
+    val result2 = allIngredients.map { it to assignments[it]!! }
+        .filter { it.second != NoAllergen }.sortedBy { (it.second as Allergen).name }
+        .joinToString(separator = ",") { it.first.name }
+    println(result2)
 }
