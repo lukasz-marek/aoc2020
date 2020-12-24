@@ -2,13 +2,13 @@ package day23
 
 inline class Cup(val value: Int)
 
-fun play(input: List<Cup>, moves: Int): List<Cup>{
+fun play(input: List<Cup>, moves: Int): List<Cup> {
     val cups = input.toMutableList()
-    var currentCup = cups.first()
-    repeat(moves){
-        val currentIndex = cups.indexOf(currentCup)
-        val cupsTaken  = (1..3)
-            .map {it + currentIndex}
+    var currentCupIndex = 0
+    repeat(moves) {
+        val currentCup = cups[currentCupIndex]
+        val cupsTaken = (1..3)
+            .map { it + currentCupIndex }
             .map { it % cups.size }
             .map { cups[it] }
             .toList()
@@ -22,8 +22,7 @@ fun play(input: List<Cup>, moves: Int): List<Cup>{
         val destinationCupIndex = cups.indexOf(destinationCup)
         cups.addAll(destinationCupIndex + 1, cupsTaken)
 
-        val nextCurrentCupIndex = (cups.indexOf(currentCup) + 1) % cups.size
-        currentCup = cups[nextCurrentCupIndex]
+        currentCupIndex = (cups.indexOf(currentCup) + 1) % cups.size
     }
     return cups
 }
