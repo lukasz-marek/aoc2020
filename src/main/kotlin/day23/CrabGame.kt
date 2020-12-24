@@ -7,17 +7,16 @@ fun play(input: List<Cup>, moves: Int): List<Cup> {
     var currentCupIndex = 0
     repeat(moves) {
         val currentCup = cups[currentCupIndex]
-        val cupsTaken = (1..3)
-            .asSequence()
+
+        val takenCupsIndexes = (1..3).asSequence()
             .map { it + currentCupIndex }
             .map { it % cups.size }
-            .map { it to cups[it] }
-            .withIndex()
-            .sortedByDescending { it.value.first }
-            .onEach { cups.removeAt(it.value.first) }
-            .sortedBy { it.index }
-            .map { it.value.second }
-            .toList()
+
+        val cupsTaken = takenCupsIndexes.withIndex()
+            .sortedByDescending { it.value }
+            .map { it.index to cups.removeAt(it.value) }
+            .sortedBy { it.first }
+            .map { it.second }.toList()
 
         val destinationCup = generateSequence(currentCup.value - 1) { it - 1 }
             .takeWhile { it >= 0 }
