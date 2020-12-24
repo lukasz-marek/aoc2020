@@ -8,11 +8,16 @@ fun play(input: List<Cup>, moves: Int): List<Cup> {
     repeat(moves) {
         val currentCup = cups[currentCupIndex]
         val cupsTaken = (1..3)
+            .asSequence()
             .map { it + currentCupIndex }
             .map { it % cups.size }
-            .map { cups[it] }
+            .map { it to cups[it] }
+            .withIndex()
+            .sortedByDescending { it.value.first }
+            .onEach { cups.removeAt(it.value.first) }
+            .sortedBy { it.index }
+            .map { it.value.second }
             .toList()
-        cups.removeAll(cupsTaken)
 
         val destinationCup = generateSequence(currentCup.value - 1) { it - 1 }
             .takeWhile { it >= 0 }
