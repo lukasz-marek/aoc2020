@@ -31,7 +31,7 @@ fun play(input: List<Cup>, moves: Int): List<Cup> {
 
         val destinationCupIndex = generateSequence(currentCup.value - 1) { it - 1 }
             .takeWhile { it > 0 }
-            .flatMap { cups.asSequence().withIndex().filter { (_, value) -> value.value == it }.map { it.index } }
+            .mapNotNull { cups.asSequence().withIndex().firstOrNull { (_, value) -> value.value == it }?.index }
             .firstOrNull()
             ?: cups.withIndex().maxByOrNull { it.value.value }!!.index
         cups.addAll(destinationCupIndex + 1, cupsTaken)
