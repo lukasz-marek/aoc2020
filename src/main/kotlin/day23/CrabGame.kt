@@ -1,17 +1,26 @@
 package day23
 
+import java.util.concurrent.TimeUnit
+
 inline class Cup(val value: Int)
 
 fun play(input: List<Cup>, moves: Int): List<Cup> {
     val cups = input.toMutableList()
     var currentCupIndex = 0
-    repeat(moves) {
+    val startTime = System.currentTimeMillis()
+    repeat(moves) { round ->
+        if ((round + 1) % 1000 == 0) {
+            val currentTime = System.currentTimeMillis()
+            val passed = TimeUnit.MILLISECONDS.toSeconds(currentTime - startTime)
+            println("round ${round + 1} of $moves, $passed seconds have passed since start")
+        }
         val currentCup = cups[currentCupIndex]
 
         val takenCupsIndexes = (1..3).asSequence()
             .map { it + currentCupIndex }
             .map { it % cups.size }
             .toList()
+
 
         val cupsTaken = takenCupsIndexes.asSequence()
             .withIndex()
@@ -27,7 +36,9 @@ fun play(input: List<Cup>, moves: Int): List<Cup> {
             ?: cups.withIndex().maxByOrNull { it.value.value }!!.index
         cups.addAll(destinationCupIndex + 1, cupsTaken)
 
-        currentCupIndex = (cups.indexOf(currentCup) + 1) % cups.size
+        val offsetDueToRemoval = takenCupsIndexes.count { it < currentCupIndex }
+        val offsetDueToAddition = if (destinationCupIndex >= currentCupIndex) 0 else 3
+        currentCupIndex = (currentCupIndex + 1 - offsetDueToRemoval + offsetDueToAddition) % cups.size
     }
     return cups
 }
