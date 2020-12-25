@@ -11,7 +11,7 @@ fun main() {
     val indexOf1 = result2.indexOf(Cup(1))
     val firstIndex = (indexOf1 + 1) % result2.size
     val secondIndex = (indexOf1 + 2) % result2.size
-    println("${result2[firstIndex].value * result2[secondIndex].value}")
+    println("${result2[firstIndex].value.toLong() * result2[secondIndex].value.toLong()}")
 }
 
 private fun preparePart2Input(input: List<Cup>): List<Cup> {
