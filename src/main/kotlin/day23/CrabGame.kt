@@ -34,7 +34,7 @@ fun play(input: List<Cup>, moves: Int): List<Cup> {
             .takeWhile { it > 0 }
             .mapNotNull { cupsWithIndex.firstOrNull { (_, value) -> value.value == it }?.index }
             .firstOrNull()
-            ?: cups.withIndex().maxByOrNull { it.value.value }!!.index
+            ?: cupsWithIndex.maxByOrNull { it.value.value }!!.index
         cups.addAll(destinationCupIndex + 1, cupsTaken)
 
         val offsetDueToRemoval = takenCupsIndexes.count { it < currentCupIndex }
