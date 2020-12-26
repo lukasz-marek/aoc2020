@@ -29,9 +29,10 @@ fun play(input: List<Cup>, moves: Int): List<Cup> {
             .sortedBy { it.first }
             .map { it.second }.toList()
 
+        val cupsWithIndex = cups.withIndex()
         val destinationCupIndex = generateSequence(currentCup.value - 1) { it - 1 }
             .takeWhile { it > 0 }
-            .mapNotNull { cups.asSequence().withIndex().firstOrNull { (_, value) -> value.value == it }?.index }
+            .mapNotNull { cupsWithIndex.firstOrNull { (_, value) -> value.value == it }?.index }
             .firstOrNull()
             ?: cups.withIndex().maxByOrNull { it.value.value }!!.index
         cups.addAll(destinationCupIndex + 1, cupsTaken)
