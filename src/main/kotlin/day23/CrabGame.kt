@@ -1,29 +1,45 @@
 package day23
 
+import java.util.concurrent.TimeUnit
+
 inline class Cup(val value: Int)
 
-fun play(input: List<Cup>, moves: Int): List<Cup>{
+fun play(input: List<Cup>, moves: Int): List<Cup> {
     val cups = input.toMutableList()
-    var currentCup = cups.first()
-    repeat(moves){
-        val currentIndex = cups.indexOf(currentCup)
-        val cupsTaken  = (1..3)
-            .map {it + currentIndex}
-            .map { it % cups.size }
-            .map { cups[it] }
-            .toList()
-        cups.removeAll(cupsTaken)
+    var currentCupIndex = 0
+    val startTime = System.currentTimeMillis()
+    repeat(moves) { round ->
+        if ((round + 1) % 1000 == 0) {
+            val currentTime = System.currentTimeMillis()
+            val passed = TimeUnit.MILLISECONDS.toSeconds(currentTime - startTime)
+            println("round ${round + 1} of $moves, $passed seconds have passed since start")
+        }
+        val currentCup = cups[currentCupIndex]
 
-        val destinationCup = generateSequence(currentCup.value - 1) { it - 1 }
-            .takeWhile { it >= 0 }
-            .firstOrNull { cups.any { cup -> cup.value == it } }
-            ?.let { Cup(it) }
-            ?: cups.maxByOrNull { it.value }!!
-        val destinationCupIndex = cups.indexOf(destinationCup)
+        val takenCupsIndexes = (1..3).asSequence()
+            .map { it + currentCupIndex }
+            .map { it % cups.size }
+            .toList()
+
+
+        val cupsTaken = takenCupsIndexes.asSequence()
+            .withIndex()
+            .sortedByDescending { it.value }
+            .map { it.index to cups.removeAt(it.value) }
+            .sortedBy { it.first }
+            .map { it.second }.toList()
+
+        val cupsWithIndex = cups.withIndex()
+        val destinationCupIndex = generateSequence(currentCup.value - 1) { it - 1 }
+            .takeWhile { it > 0 }
+            .mapNotNull { cupsWithIndex.firstOrNull { (_, value) -> value.value == it }?.index }
+            .firstOrNull()
+            ?: cupsWithIndex.maxByOrNull { it.value.value }!!.index
         cups.addAll(destinationCupIndex + 1, cupsTaken)
 
-        val nextCurrentCupIndex = (cups.indexOf(currentCup) + 1) % cups.size
-        currentCup = cups[nextCurrentCupIndex]
+        val offsetDueToRemoval = takenCupsIndexes.count { it < currentCupIndex }
+        val offsetDueToAddition = if (destinationCupIndex >= currentCupIndex) 0 else 3
+        currentCupIndex = (currentCupIndex + 1 - offsetDueToRemoval + offsetDueToAddition) % cups.size
     }
     return cups
 }
