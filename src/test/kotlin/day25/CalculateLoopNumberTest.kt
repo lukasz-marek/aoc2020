@@ -11,7 +11,7 @@ class CalculateLoopNumberTest {
         // given
         val publicKey = 5764801L
         // when
-        val loopNumber = calculateLoopNumber(publicKey)
+        val loopNumber = calculateLoopNumber(publicKey, 7L)
         // then
         expectThat(loopNumber).isEqualTo(8L)
     }
@@ -21,7 +21,7 @@ class CalculateLoopNumberTest {
         // given
         val publicKey = 17807724L
         // when
-        val loopNumber = calculateLoopNumber(publicKey)
+        val loopNumber = calculateLoopNumber(publicKey, 7L)
         // then
         expectThat(loopNumber).isEqualTo(11L)
     }
